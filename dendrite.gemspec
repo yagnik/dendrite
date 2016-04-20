@@ -6,8 +6,8 @@ require 'dendrite/version'
 Gem::Specification.new do |spec|
   spec.name          = "dendrite"
   spec.version       = Dendrite::VERSION
-  spec.authors       = ["TODO: Write your name"]
-  spec.email         = ["TODO: Write your email address"]
+  spec.authors       = ["Yagnik"]
+  spec.email         = ["yagnikkhanna@gmail.com"]
 
   spec.summary       = %q{TODO: Write a short summary, because Rubygems requires one.}
   spec.description   = %q{TODO: Write a longer description or delete this line.}
@@ -30,4 +30,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 1.11"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "minitest", "~> 5.0"
+  spec.add_development_dependency "pry"
+  spec.add_dependency             "activemodel"
 end
