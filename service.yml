@@ -6,7 +6,6 @@ services:
     type: web
     repo: git@github.com:yagnik/dendrite
     package_name: dendrite
-    error_budget: None
     ports:
       advertised_port: 8081
       running_port: 8080
@@ -14,6 +13,17 @@ services:
       - name: cat
         latency: foo
   - name: cat
+    type: web
+    repo: git@github.com:yagnik/dendrite
+    package_name: dendrite
+    error_budget: None
+    ports:
+      advertised_port: 8081
+      running_port: 8080
+    dependancies:
+      - name: foobar
+        latency: foo
+  - name: baz
     type: web
     repo: git@github.com:yagnik/dendrite
     package_name: dendrite

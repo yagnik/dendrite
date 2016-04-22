@@ -1,41 +1,80 @@
 module Dendrite
+  module Validator
+    def valid?
+      super
+
+      @dependancies.each do |depname, dep|
+        if dep.invalid?
+          dep.errors.each do |key, value|
+            errors.add "dependancy_#{key}", value
+          end
+        end
+      end
+
+      @ports.each do |dep|
+        if dep.invalid?
+          dep.errors.each do |key, value|
+            errors.add "port_#{key}", value
+          end
+        end
+      end
+
+      return errors.count == 0
+    end
+  end
+
   class ServiceNode
     include ActiveModel::Validations
+    prepend Validator
 
     Port = Struct.new(:name, :port) do
       include ActiveModel::Validations
-      validates! :name, presence: true
-      validates! :port, presence: true
+      validates_presence_of :name
+      validates_presence_of :port
+      validates :port, numericality: { only_integer: true }
     end
 
     Dependacy = Struct.new(:service, :latency) do
       include ActiveModel::Validations
-      validates! :service, presence: true
-      validates! :latency, presence: true
+      validates_presence_of :service
+      validates_presence_of :latency
     end
 
+    VALID_TYPE = %w(
+      tomcat
+      mysql
+      mongodb
+      aerospike
+      cassandra
+    )
 
     attr_reader :namespace, :lead_email, :team_email,
                 :name, :type, :repo, :package_name,
-                :error_budget
-
-    attr_accessor :ports, :dependancies
+                :ports, :dependancies
 
     validates_presence_of :namespace, :lead_email, :team_email,
                           :name, :type, :repo, :package_name
 
-    def initialize(namespace:, lead_email:, team_email:, name:, type:, repo:)
-      @namespace, @lead_email, @team_email = namespace, lead_email, team_email
-      @dependancies = {}
-      @ports = []
-    end
+    validates :namespace, format: { with: /\A[a-z_]+\z/, message: "only allows lowercase letters" }
+    validates :name, format: { with: /\A[a-z_]+\z/, message: "only allows lowercase letters" }
+    validates :type, inclusion: { in: VALID_TYPE, message: "%{value} is not a valid type" }
 
-    def to_s
-      name
+    def initialize(**args)
+      @ports = []
+      args.each do |k,v|
+        if k == :ports
+          ports.each do |port|
+            @ports << Port.new(*port)
+          end
+        else
+          instance_variable_set("@#{k}", v)
+        end
+      end
+      @dependancies = {}
     end
 
     def add_dependancy(service:, latency:)
-      @dependancies[service.name] = Dependacy.new(service: service, latency: latency)
+      @dependancies[service.name] = Dependacy.new(service, latency)
     end
   end
 end

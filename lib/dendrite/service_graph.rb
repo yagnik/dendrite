@@ -2,33 +2,32 @@ module Dendrite
   class ServiceGraph
     attr_reader :services
 
-    def self.load(source:)
-      graph = self.new
-      services = IO.services_from_folder(source)
-
-      services.each do |service|
-        graph << ServiceNode.new(*service)
-      end
-
-      services.each do |service|
-        service[:dependancies].each do |deps|
-          graph[service[:name]].add_dependancy(graph[deps[:name]], deps[:latency])
-        end
-      end
-
-      graph
-    end
-
     def initialize
       @services = {}
     end
 
     def <<(service)
+      raise KeyError unless service.name
       @services[service.name] = service
     end
 
-    def [](name:)
+    def [](name)
       @services[name]
+    end
+
+    def fetch(name)
+      @services.fetch(name)
+    end
+
+    def valid?
+      @services.values.collect(&:valid?).all?
+    end
+
+    def errors
+      @services.inject({}) do |hash, (name, service)|
+        hash[name] = service.errors.messages
+        hash
+      end
     end
   end
 end

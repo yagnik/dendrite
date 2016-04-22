@@ -1,6 +1,23 @@
 module Dendrite
   class IO
     class << self
+      def load(source:)
+        graph = Dendrite::ServiceGraph.new
+        services = IO.services_from_folder(source: source)
+
+        services.each do |service|
+          graph << ServiceNode.new(service)
+        end
+
+        services.each do |service|
+          service[:dependancies].each do |deps|
+            graph[service[:name]].add_dependancy(service: graph.fetch(deps[:name]), latency: deps[:latency])
+          end
+        end
+
+        graph
+      end
+
       def services_from_file(source:)
         data = YAML::load(File.open(source)).deep_symbolize_keys
         data[:services].collect do |service|
