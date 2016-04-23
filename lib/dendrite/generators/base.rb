@@ -7,10 +7,6 @@ module Dendrite
         @graph = graph
       end
 
-      def build
-        raise NotImplementedError
-      end
-
       def to_h
         raise NotImplementedError
       end

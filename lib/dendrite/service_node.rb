@@ -73,6 +73,14 @@ module Dendrite
       @dependancies = {}
     end
 
+    def listening_port
+      8080
+    end
+
+    def advertised_port
+      9000
+    end
+
     def add_dependancy(service:, latency:)
       @dependancies[service.name] = Dependacy.new(service, latency)
     end
