@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+require 'bundler/setup'
+require 'dendrite'
+
+# read nerve config
+services  = Dendrite::IO.read(Dendrite::Config.nerve_config_path)[:services].keys
+service_graph = Dendrite::IO.load(Dendrite::Config.services_sources)
+
+raise Dendrite::InvalidData if graph.invalid?
+raise Dendrite::UnknownService unless services.collect {|service_name| graph[service_name]}.all?
+
+service_name = "foo"
+services << service_name
+
+
+synapse = Dendrite::Generators::Synapse.new(graph: graph, service_names: services)
+Dendrite::IO.write(data: synapse.to_h, Dendrite::Config.synapse_config_path)
+
+nerve = Dendrite::Generators::Nerve.new(graph: graph, service_names: services)
+Dendrite::IO.write(data: nerve.to_h, Dendrite::Config.nerve_config_path)
+
+#input service name

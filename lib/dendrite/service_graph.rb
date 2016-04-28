@@ -2,6 +2,8 @@ module Dendrite
   class ServiceGraph
     attr_reader :services
 
+    delegate all enumerator to services
+
     def initialize
       @services = {}
     end

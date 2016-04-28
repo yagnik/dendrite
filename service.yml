@@ -19,7 +19,7 @@ services:
     error_budget: None
     ports:
       advertised_port: 8081
-      running_port: 8080
+      lb_port: 8080
     dependancies:
       - name: foobar
         latency: foo

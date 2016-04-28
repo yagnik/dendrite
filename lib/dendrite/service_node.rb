@@ -60,11 +60,11 @@ module Dendrite
     validates :type, inclusion: { in: VALID_TYPE, message: "%{value} is not a valid type" }
 
     def initialize(**args)
-      @ports = []
+      @ports = {}
       args.each do |k,v|
         if k == :ports
-          ports.each do |port|
-            @ports << Port.new(*port)
+          ports.each do |name, port|
+            @ports[name] << Port.new(name, port)
           end
         else
           instance_variable_set("@#{k}", v)
@@ -74,11 +74,11 @@ module Dendrite
     end
 
     def listening_port
-      8080
+      ports[:lb_port].port
     end
 
     def advertised_port
-      9000
+      ports[:advertised_port].port
     end
 
     def add_dependancy(service:, latency:)

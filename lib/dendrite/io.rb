@@ -18,8 +18,18 @@ module Dendrite
         graph
       end
 
+      def write(data:, destination:)
+        File.open(destination, 'w') do |file|
+          file.write(data)
+        end
+      end
+
+      def read(source:)
+        YAML::load(File.open(source)).deep_symbolize_keys
+      end
+
       def services_from_file(source:)
-        data = YAML::load(File.open(source)).deep_symbolize_keys
+        data = read(source)
         data[:services].collect do |service|
           service[:namespace] = data[:namespace]
           service[:lead_email] = data[:lead_email]
@@ -29,10 +39,8 @@ module Dendrite
       end
 
       def services_from_folder(source:)
-        services = Dir["#{source}/*.yml"].collect do |file|
-          services_from_file(source: file)
-        end
-        services.flatten
+        Dir["#{source}/*.yml"].collect {|file| services_from_file(source: file)}
+                              .flatten
       end
     end
   end
