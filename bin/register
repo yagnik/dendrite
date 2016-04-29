@@ -17,13 +17,11 @@ OptionParser.new do |opts|
 end.parse!
 
 Dendrite::Config.load(source: options[:config])
-
 services = begin
   Dendrite::IO.read(source: Dendrite::Config.nerve_config_path)[:services].keys
 rescue
   []
 end.collect(&:to_s)
-
 graph = Dendrite::IO.load(source: Dendrite::Config.services_source)
 
 raise Dendrite::InvalidData unless graph.valid?
