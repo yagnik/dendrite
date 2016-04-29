@@ -1,6 +1,6 @@
 language: ruby
 before_install: gem install bundler -v 1.11.2
-script: bundle exec rake
+script: bundle exec rake test
 rvm:
   - 2.2.4
   - ruby-head
