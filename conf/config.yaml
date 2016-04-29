@@ -5,7 +5,7 @@ dendrite:
     - localhost:2181
   nerve_config_path: /opt/smartstack/conf/nerve.yml
   synapse_config_path: /opt/smartstack/conf/synapse.yml
-  services_source: ./services
+  services_source: ./conf/services
 
 synapse:
   haproxy:

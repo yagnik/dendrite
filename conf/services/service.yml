@@ -4,7 +4,7 @@ team_email: team@foobar.com
 services:
   - name: foobar
     type: tomcat
-    repo: git@github.com:yagnik/dendrite/services/pom.xml
+    repo: git@github.com:yagnik/dendrite
     package_name: dendrite
     ports:
       advertised_port: 8081

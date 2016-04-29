@@ -19,19 +19,19 @@ end.parse!
 Dendrite::Config.load(source: options[:config])
 
 services = begin
-  Dendrite::IO.read(Dendrite::Config.nerve_config_path)[:services].keys
+  Dendrite::IO.read(source: Dendrite::Config.nerve_config_path)[:services].keys
 rescue
   []
-end
+end.collect(&:to_s)
 
 graph = Dendrite::IO.load(source: Dendrite::Config.services_source)
 
 raise Dendrite::InvalidData unless graph.valid?
 raise Dendrite::UnknownService unless services.collect {|service_name| graph[service_name]}.all?
-
 raise Dendrite::UnknownService unless graph[options[:service_name]]
-services << options[:service_name]
 
+services << options[:service_name]
+services.uniq!
 synapse = Dendrite::Generators::Synapse.new(graph: graph, service_names: services)
 Dendrite::IO.write(data: synapse.to_yaml, destination: Dendrite::Config.synapse_config_path)
 
