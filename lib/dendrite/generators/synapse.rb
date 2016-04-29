@@ -3,6 +3,13 @@ module Dendrite
     class Synapse < Base
       def initialize(graph:, service_names:)
         super
+        dep = {}
+        @services.each do |service_name, service|
+          service.dependancies.each do |dependancy_name, dependancy|
+            dep[dependancy_name] = dependancy.service
+          end
+        end
+        @services = dep
         @services = @services.collect { |service_name, service| ServiceConfig.new(service)}
       end
 
