@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module Dendrite
   class IO
     class << self
@@ -19,6 +21,7 @@ module Dendrite
       end
 
       def write(data:, destination:)
+        FileUtils::mkdir_p(File.dirname(destination))
         File.open(destination, 'w') do |file|
           file.write(data)
         end
@@ -29,7 +32,7 @@ module Dendrite
       end
 
       def services_from_file(source:)
-        data = read(source)
+        data = read(source: source)
         data[:services].collect do |service|
           service[:namespace] = data[:namespace]
           service[:lead_email] = data[:lead_email]

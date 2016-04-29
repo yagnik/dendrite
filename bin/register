@@ -1,22 +1,39 @@
 #!/usr/bin/env ruby
 require 'bundler/setup'
 require 'dendrite'
+require 'optparse'
+require 'pry'
 
-# read nerve config
-services  = Dendrite::IO.read(Dendrite::Config.nerve_config_path)[:services].keys
-service_graph = Dendrite::IO.load(Dendrite::Config.services_sources)
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: register [options]"
+  opts.on("-s", "--service SERVICE_NAME", "service name") do |v|
+    options[:service_name] = v
+  end
 
-raise Dendrite::InvalidData if graph.invalid?
+  opts.on("-c", "--config CONFIG_FILE", "config file") do |v|
+    options[:config] = v
+  end
+end.parse!
+
+Dendrite::Config.load(source: options[:config])
+
+services = begin
+  Dendrite::IO.read(Dendrite::Config.nerve_config_path)[:services].keys
+rescue
+  []
+end
+
+graph = Dendrite::IO.load(source: Dendrite::Config.services_source)
+
+raise Dendrite::InvalidData unless graph.valid?
 raise Dendrite::UnknownService unless services.collect {|service_name| graph[service_name]}.all?
 
-service_name = "foo"
-services << service_name
-
+raise Dendrite::UnknownService unless graph[options[:service_name]]
+services << options[:service_name]
 
 synapse = Dendrite::Generators::Synapse.new(graph: graph, service_names: services)
-Dendrite::IO.write(data: synapse.to_h, Dendrite::Config.synapse_config_path)
+Dendrite::IO.write(data: synapse.to_yaml, destination: Dendrite::Config.synapse_config_path)
 
 nerve = Dendrite::Generators::Nerve.new(graph: graph, service_names: services)
-Dendrite::IO.write(data: nerve.to_h, Dendrite::Config.nerve_config_path)
-
-#input service name
+Dendrite::IO.write(data: nerve.to_yaml, destination: Dendrite::Config.nerve_config_path)

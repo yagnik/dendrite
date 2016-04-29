@@ -11,7 +11,7 @@ module Dendrite
         end
       end
 
-      @ports.each do |dep|
+      @ports.each do |depname, dep|
         if dep.invalid?
           dep.errors.each do |key, value|
             errors.add "port_#{key}", value
@@ -63,8 +63,8 @@ module Dendrite
       @ports = {}
       args.each do |k,v|
         if k == :ports
-          ports.each do |name, port|
-            @ports[name] << Port.new(name, port)
+          v.each do |name, port|
+            @ports[name] = Port.new(name, port)
           end
         else
           instance_variable_set("@#{k}", v)
@@ -74,7 +74,7 @@ module Dendrite
     end
 
     def listening_port
-      ports[:lb_port].port
+      ports[:advertised_port].port
     end
 
     def advertised_port

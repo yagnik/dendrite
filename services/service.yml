@@ -3,8 +3,8 @@ lead_email: vp@foobar.com
 team_email: team@foobar.com
 services:
   - name: foobar
-    type: web
-    repo: git@github.com:yagnik/dendrite
+    type: tomcat
+    repo: git@github.com:yagnik/dendrite/services/pom.xml
     package_name: dendrite
     ports:
       advertised_port: 8081
@@ -13,7 +13,7 @@ services:
       - name: cat
         latency: foo
   - name: cat
-    type: web
+    type: tomcat
     repo: git@github.com:yagnik/dendrite
     package_name: dendrite
     error_budget: None
@@ -24,7 +24,7 @@ services:
       - name: foobar
         latency: foo
   - name: baz
-    type: web
+    type: tomcat
     repo: git@github.com:yagnik/dendrite
     package_name: dendrite
     error_budget: None

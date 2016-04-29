@@ -1,8 +1,9 @@
 module Dendrite
   class ServiceGraph
-    attr_reader :services
+    extend Forwardable
 
-    delegate all enumerator to services
+    attr_reader :services
+    def_delegators :services, :each, :each
 
     def initialize
       @services = {}

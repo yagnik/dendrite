@@ -1,51 +1,61 @@
 require 'yaml'
 require 'json'
 require 'active_model'
-require "dendrite/version"
+require 'socket'
+require 'dendrite/version'
 require 'dendrite/io'
-require "dendrite/service_node"
-require "dendrite/service_graph"
-require "dendrite/generators/base"
-require "dendrite/generators/nerve"
-require "dendrite/generators/synapse"
+require 'dendrite/service_node'
+require 'dendrite/service_graph'
+require 'dendrite/generators/base'
+require 'dendrite/generators/nerve'
+require 'dendrite/generators/synapse'
 
 module Dendrite
-  InvalidData = StandardError
-  UnknownService = StandardError
+  Error = Class.new(StandardError)
+  InvalidData = Class.new(Error)
+  UnknownService = Class.new(Error)
 
   class Config
-    @@data = Dendrite::IO.read(source)
-
     class << self
+      def load(source:)
+        @@data = Dendrite::IO.read(source: source)
+      end
+
+      def services_source
+        @@data[:dendrite].fetch(:services_source)
+      end
+
       def dc
-        @@data.fetch(:dc)
+        @@data[:dendrite].fetch(:dc)
       end
 
       def env
-        @@data[:env] || :dev
+        @@data[:dendrite][:env] || :dev
       end
 
       def zk_hosts
-        @@data[:zk_hosts]
+        @@data[:dendrite][:zk_hosts]
       end
 
       def nerve_config_path
-        @@data[:nerve_config]
+        @@data[:dendrite][:nerve_config_path]
       end
 
       def synapse_config_path
-        @@data[:synapse_config]
+        @@data[:dendrite][:synapse_config_path]
       end
 
       def global_haproxy_config
-        @@data[:haproxy_config]
+        @@data[:synapse][:haproxy]
       end
 
       def public_ip
-
+        ip = Socket.ip_address_list.detect{|intf| intf.ipv4_private?}
+        ip.ip_address if ip
       end
 
       def fqdn
+        Socket.gethostbyname(Socket.gethostname).first
       end
 
       def instance

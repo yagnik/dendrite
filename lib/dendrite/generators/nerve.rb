@@ -1,6 +1,12 @@
 module Dendrite
   module Generators
     class Nerve < Base
+
+      def initialize(graph:, service_names:)
+        super
+        @services = @services.collect { |service_name, service| ServiceConfig.new(service)}
+      end
+
       def to_h
         service_list = services.inject({}) do |hash, service|
           hash[service.name] = service.to_h
@@ -12,9 +18,10 @@ module Dendrite
         }.merge({services: service_list})
       end
 
-      private
       ServiceConfig = Struct.new(:service) do
-        delegate :name, :namespace, service
+        extend Forwardable
+        def_delegator :service, :name, :name
+        def_delegator :service, :namespace, :namespace
 
         def to_h
           {
