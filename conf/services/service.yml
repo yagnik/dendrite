@@ -1,34 +1,48 @@
+dendrite_version: 1
+organization: sd
 namespace: cams
 lead_email: vp@foobar.com
 team_email: team@foobar.com
 services:
   - name: foobar
     type: tomcat
-    repo: git@github.com:yagnik/dendrite
-    package_name: dendrite
+    deploy:
+      repository: git@github.com:yagnik/dendrite
+      package: dendrite
+    scale:
+      min_instance_count: 1
+      max_instance_count: 5
     ports:
       advertised_port: 8081
-      running_port: 8080
+      listening_port: 8080
     dependancies:
-      - name: cat
+      - namespace: cams
+        name: cat
         latency: foo
   - name: cat
     type: tomcat
-    repo: git@github.com:yagnik/dendrite
-    package_name: dendrite
-    error_budget: None
+    deploy:
+      repository: git@github.com:yagnik/dendrite
+      package: dendrite
+    scale:
+      min_instance_count: 1
+      max_instance_count: 5
     ports:
       advertised_port: 8081
-      lb_port: 8080
+      listening_port: 8080
     dependancies:
-      - name: foobar
+      - namespace: cams
+        name: foobar
         latency: foo
   - name: baz
     type: tomcat
-    repo: git@github.com:yagnik/dendrite
-    package_name: dendrite
-    error_budget: None
+    deploy:
+      repository: git@github.com:yagnik/dendrite
+      package: dendrite
+    scale:
+      min_instance_count: 1
+      max_instance_count: 5
     ports:
       advertised_port: 8081
-      running_port: 8080
+      listening_port: 8080
     dependancies: []

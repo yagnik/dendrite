@@ -4,7 +4,7 @@ module Dendrite
 
       def initialize(graph:, service_names:)
         super
-        @services = @services.collect { |service_name, service| ServiceConfig.new(service)}
+        @services = @services.collect { |service| ServiceConfig.new(service)}
       end
 
       def to_h
@@ -22,6 +22,7 @@ module Dendrite
         extend Forwardable
         def_delegator :service, :name, :name
         def_delegator :service, :namespace, :namespace
+        def_delegator :service, :organization, :organization
 
         def to_h
           {
@@ -38,7 +39,7 @@ module Dendrite
           {
             reporter_type: 'zookeeper',
             zk_hosts: Dendrite::Config.zk_hosts,
-            zk_path: "/smartstack/services/#{service.namespace}/#{service.name}/instances"
+            zk_path: "/smartstack/services/#{organization}/#{namespace}/#{service.real_name}/instances"
           }
         end
       end

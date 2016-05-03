@@ -3,14 +3,14 @@ module Dendrite
     class Synapse < Base
       def initialize(graph:, service_names:)
         super
-        dep = {}
-        @services.each do |service_name, service|
-          service.dependancies.each do |dependancy_name, dependancy|
-            dep[dependancy_name] = dependancy.service
+        dep = []
+        @services.each do |service|
+          service.dependancies.each do |_, dependancy|
+            dep << dependancy.service
           end
         end
-        @services = dep
-        @services = @services.collect { |service_name, service| ServiceConfig.new(service)}
+        @services = dep.uniq
+        @services = @services.collect { |service| ServiceConfig.new(service)}
       end
 
       def to_h
@@ -33,6 +33,7 @@ module Dendrite
         extend Forwardable
         def_delegator :service, :name, :name
         def_delegator :service, :namespace, :namespace
+        def_delegator :service, :organization, :organization
 
         def to_h
           discovery_config.merge(haproxy_config)
@@ -42,8 +43,8 @@ module Dendrite
           {
             discovery: {
               method: 'zookeeper',
-              zk_hosts: Dendrite::Config.zk_hosts,
-              zk_path: "/smartstack/services/#{namespace}/#{name}/instances"
+              hosts: Dendrite::Config.zk_hosts,
+              path: "/smartstack/services/#{organization}/#{namespace}/#{service.real_name}/instances"
             }
           }
         end

@@ -7,6 +7,7 @@ module Dendrite
         @graph = graph
         @services = graph.services
                          .select { |service_name, service| service_names.include?(service_name) }
+                         .collect { |_, service| service }
       end
 
       def to_h

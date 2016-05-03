@@ -1,4 +1,5 @@
 dendrite:
+  organization: sd
   dc: ggn1
   env: dev
   zk_hosts:
@@ -9,7 +10,7 @@ dendrite:
 
 synapse:
   haproxy:
-    reload_command: haproxy -f /etc/haproxy/haproxy.cfg -p /var/run/haproxy.pid -sf $(cat /var/run/haproxy.pid)
+    reload_command: sudo service haproxy reload
     config_file_path: /etc/haproxy/haproxy.cfg
     socket_file_path: /var/haproxy/stats.sock
     do_writes: true

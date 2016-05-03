@@ -6,13 +6,24 @@ module Dendrite
 
     let(:valid_service) do
      {
+        organization: 'sd',
         namespace: 'namespace',
         lead_email: 'lead@email.com',
         team_email: 'team@email.com',
-        name: "service",
+        name: 'foo',
         type: "tomcat",
-        repo: "git@github.com",
-        package_name: "service_package"
+        deploy: {
+          repository: 'git@github.com:yagnik/dendrite',
+          package: 'dendrite'
+        },
+        scale: {
+          min_instance_count: 1,
+          max_instance_count: 5
+        },
+        ports: {
+          advertised_port: 8081,
+          listening_port: 8080
+        }
       }
     end
 
@@ -21,11 +32,11 @@ module Dendrite
       service2 = ServiceNode.new(valid_service.merge({name: "another_service"}))
       service1.add_dependancy(service: service2, latency: 1)
       assert_equal service1.dependancies.length, 1
-      assert_equal service1.dependancies['another_service'].service, service2
+      assert_equal service1.dependancies[service2.name].service, service2
     end
 
     def test_presence_validation
-      %i(namespace lead_email team_email name type repo package_name).each do |key|
+      %i(namespace lead_email team_email name type deploy scale).each do |key|
         service = ServiceNode.new(key => nil)
         refute service.valid?
         assert service.errors.messages[key], "#{key} should not be nil"

@@ -12,8 +12,10 @@ module Dendrite
         end
 
         services.each do |service|
+          node = ServiceNode.new(service)
           service[:dependancies].each do |deps|
-            graph[service[:name]].add_dependancy(service: graph.fetch(deps[:name]), latency: deps[:latency])
+            dependancy_name = "#{service[:organization]}_#{deps[:namespace]}_#{deps[:name]}"
+            graph[node.name].add_dependancy(service: graph[dependancy_name], latency: deps[:latency])
           end
         end
 
@@ -34,9 +36,10 @@ module Dendrite
       def services_from_file(source:)
         data = read(source: source)
         data[:services].collect do |service|
-          service[:namespace] = data[:namespace]
-          service[:lead_email] = data[:lead_email]
-          service[:team_email] = data[:team_email]
+          service[:organization] = data[:organization]
+          service[:namespace]    = data[:namespace]
+          service[:lead_email]   = data[:lead_email]
+          service[:team_email]   = data[:team_email]
           service
         end
       end

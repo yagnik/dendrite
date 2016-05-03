@@ -14,6 +14,7 @@ module Dendrite
   Error = Class.new(StandardError)
   InvalidData = Class.new(Error)
   UnknownService = Class.new(Error)
+  DuplicateService = Class.new(Error)
 
   class Config
     class << self
@@ -50,7 +51,8 @@ module Dendrite
       end
 
       def public_ip
-        ip = Socket.ip_address_list.detect{|intf| intf.ipv4_private?}
+        ip = Socket.ip_address_list.detect{|intf| intf.ipv4_private?} ||
+             Socket.ip_address_list.detect{|intf| intf.ipv4? && !intf.ipv4_loopback? && !intf.ipv4_multicast? && !intf.ipv4_private?}
         ip.ip_address if ip
       end
 

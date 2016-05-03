@@ -11,23 +11,20 @@ module Dendrite
 
     def <<(service)
       raise KeyError unless service.name
-      @services[service.name] = service
+      raise DuplicateService if services.keys.include?(service.name)
+      services[service.name] = service
     end
 
     def [](name)
-      @services[name]
-    end
-
-    def fetch(name)
-      @services.fetch(name)
+      services.fetch(name)
     end
 
     def valid?
-      @services.values.collect(&:valid?).all?
+      services.values.collect(&:valid?).all?
     end
 
     def errors
-      @services.inject({}) do |hash, (name, service)|
+      services.inject({}) do |hash, (name, service)|
         hash[name] = service.errors.messages
         hash
       end
