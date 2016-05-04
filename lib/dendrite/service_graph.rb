@@ -25,7 +25,7 @@ module Dendrite
 
     def errors
       services.inject({}) do |hash, (name, service)|
-        hash[name] = service.errors.messages
+        hash[name] = service.errors.messages if service.errors.messages.length > 0
         hash
       end
     end

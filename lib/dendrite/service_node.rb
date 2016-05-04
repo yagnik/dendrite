@@ -99,7 +99,6 @@ module Dendrite
 
     def initialize(**args)
       @ports = {}
-      @dependancies = {}
       args.each do |k,v|
         case k
         when :ports
@@ -114,6 +113,7 @@ module Dendrite
           instance_variable_set("@#{k}", v)
         end
       end
+      @dependancies = {}
     end
 
     def real_name
