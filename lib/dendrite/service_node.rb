@@ -73,14 +73,6 @@ module Dendrite
       validates_presence_of :package
     end
 
-    VALID_TYPE = %w(
-      tomcat
-      mysql
-      mongodb
-      aerospike
-      cassandra
-    )
-
     VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i
 
     attr_reader :organization, :namespace, :lead_email, :team_email,
@@ -95,7 +87,7 @@ module Dendrite
     validates :lead_email, format: { with: VALID_EMAIL_REGEX, message: "invalid email format" }
     validates :team_email, format: { with: VALID_EMAIL_REGEX, message: "invalid email format" }
     validates :name, format: { with: /\A[a-z_]+\z/, message: "only allows lowercase letters" }
-    validates :type, inclusion: { in: VALID_TYPE, message: "%{value} is not a valid type" }
+    validates :type, inclusion: { in: -> (_) { Dendrite::Config.valid_types } , message: "%{value} is not a valid type" }
 
     def initialize(**args)
       @ports = {}

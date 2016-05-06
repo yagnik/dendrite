@@ -6,7 +6,14 @@ dendrite:
     - localhost:2181
   nerve_config_path: /opt/smartstack/conf/nerve.yml
   synapse_config_path: /opt/smartstack/conf/synapse.yml
-  services_source: /vagrant/services/services/ 
+  services_source: conf/services
+  valid_app_types:
+    - tomcat
+    - mysql
+    - mongodb
+    - aerospike
+    - cassandra
+    - jar
 
 synapse:
   haproxy:

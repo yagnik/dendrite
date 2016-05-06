@@ -4,12 +4,6 @@ require 'active_model'
 require 'socket'
 require 'forwardable'
 require 'dendrite/version'
-require 'dendrite/io'
-require 'dendrite/service_node'
-require 'dendrite/service_graph'
-require 'dendrite/generators/base'
-require 'dendrite/generators/nerve'
-require 'dendrite/generators/synapse'
 
 module Dendrite
   Error = Class.new(StandardError)
@@ -51,6 +45,10 @@ module Dendrite
         @@data[:synapse][:haproxy]
       end
 
+      def valid_types
+        @@data[:dendrite][:valid_app_types]
+      end
+
       def public_ip
         ip = Socket.ip_address_list.detect{|intf| intf.ipv4_private?} ||
              Socket.ip_address_list.detect{|intf| intf.ipv4? && !intf.ipv4_loopback? && !intf.ipv4_multicast? && !intf.ipv4_private?}
@@ -62,10 +60,15 @@ module Dendrite
       end
 
       def instance
-        fqdn.gsub('.', '_')
+        fqdn
       end
     end
   end
 end
 
-
+require 'dendrite/io'
+require 'dendrite/service_node'
+require 'dendrite/service_graph'
+require 'dendrite/generators/base'
+require 'dendrite/generators/nerve'
+require 'dendrite/generators/synapse'
