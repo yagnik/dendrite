@@ -55,7 +55,7 @@ module Dendrite
               port: service.advertised_port,
               server_options: 'check inter 2s rise 3 fall 2',
               listen: [
-                'mode http'
+                'mode tcp'
               ]
             }
           }
