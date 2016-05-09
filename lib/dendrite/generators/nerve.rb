@@ -4,6 +4,11 @@ module Dendrite
 
       def initialize(graph:, service_names:)
         super
+        @services.group_by { |service| service.listening_port }.each do |port, services|
+          if services.length > 1
+            raise PortCollission, "Port collission between #{services.collect(&:name).join(',')}"
+          end
+        end
         @services = @services.collect { |service| ServiceConfig.new(service)}
       end
 
