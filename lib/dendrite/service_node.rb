@@ -3,10 +3,10 @@ module Dendrite
     def valid?
       super
 
-      dependancies.each do |depname, dep|
+      dependencies.each do |depname, dep|
         if dep.invalid?
           dep.errors.each do |key, value|
-            errors.add "dependancy_#{key}", value
+            errors.add "dependency_#{key}", value
           end
         end
       end
@@ -46,7 +46,7 @@ module Dendrite
       validates :port, numericality: { only_integer: true }
     end
 
-    Dependacy = Struct.new(:service, :latency) do
+    Dependency = Struct.new(:service, :latency) do
       include ActiveModel::Validations
       validates_presence_of :service
       validates_presence_of :latency
@@ -76,7 +76,7 @@ module Dendrite
     VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i
 
     attr_reader :organization, :namespace, :lead_email, :team_email,
-                :type, :deploy, :scale, :ports, :dependancies
+                :type, :deploy, :scale, :ports, :dependencies
                 # :name is set but magically
 
     validates_presence_of :organization, :namespace, :lead_email, :team_email,
@@ -105,7 +105,7 @@ module Dendrite
           instance_variable_set("@#{k}", v)
         end
       end
-      @dependancies = {}
+      @dependencies = {}
     end
 
     def real_name
@@ -124,8 +124,8 @@ module Dendrite
       ports[:advertised_port].port if ports[:advertised_port]
     end
 
-    def add_dependancy(service:, latency:)
-      @dependancies[service.name] = Dependacy.new(service, latency)
+    def add_dependency(service:, latency:)
+      @dependencies[service.name] = Dependency.new(service, latency)
     end
   end
 end

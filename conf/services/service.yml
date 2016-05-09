@@ -14,7 +14,7 @@ services:
     ports:
       advertised_port: 8082
       listening_port: 8080
-    dependancies:
+    dependencies:
       - namespace: cams
         name: cat
         latency: foo
@@ -32,7 +32,7 @@ services:
     ports:
       advertised_port: 8081
       listening_port: 8080
-    dependancies:
+    dependencies:
       - namespace: cams
         name: foobar
         latency: foo
@@ -47,4 +47,4 @@ services:
     ports:
       advertised_port: 8081
       listening_port: 8080
-    dependancies: []
+    dependencies: []

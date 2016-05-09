@@ -59,7 +59,7 @@ module Dendrite
     def test_valid_returns_true_if_no_error_in_graph
       service_graph << service_foo
       service_graph << service_bar
-      service_foo.add_dependancy(service: service_bar, latency: 1)
+      service_foo.add_dependency(service: service_bar, latency: 1)
       assert service_graph.valid?
     end
 

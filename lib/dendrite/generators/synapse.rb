@@ -5,8 +5,8 @@ module Dendrite
         super
         dep = []
         @services.each do |service|
-          service.dependancies.each do |_, dependancy|
-            dep << dependancy.service
+          service.dependencies.each do |_, dependency|
+            dep << dependency.service
           end
         end
         @services = dep.uniq

@@ -27,12 +27,12 @@ module Dendrite
       }
     end
 
-    def test_add_dependancy
+    def test_add_dependency
       service1 = ServiceNode.new(valid_service)
       service2 = ServiceNode.new(valid_service.merge({name: "another_service"}))
-      service1.add_dependancy(service: service2, latency: 1)
-      assert_equal service1.dependancies.length, 1
-      assert_equal service1.dependancies[service2.name].service, service2
+      service1.add_dependency(service: service2, latency: 1)
+      assert_equal service1.dependencies.length, 1
+      assert_equal service1.dependencies[service2.name].service, service2
     end
 
     def test_presence_validation
@@ -73,11 +73,11 @@ module Dendrite
       assert port.errors.messages[:port], ":port should be present"
     end
 
-    def test_dependancy_validation
-      dependancy = ServiceNode::Dependacy.new
-      refute dependancy.valid?
-      assert dependancy.errors.messages[:service], ":service should be present"
-      assert dependancy.errors.messages[:latency], ":latency should be present"
+    def test_dependency_validation
+      dependency = ServiceNode::Dependency.new
+      refute dependency.valid?
+      assert dependency.errors.messages[:service], ":service should be present"
+      assert dependency.errors.messages[:latency], ":latency should be present"
     end
   end
 end

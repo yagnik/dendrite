@@ -13,10 +13,16 @@ module Dendrite
 
         services.each do |service|
           node = ServiceNode.new(service)
+          if service[:dependencies]
+            service[:dependencies].each do |deps|
+              dependency_name = "#{service[:organization]}_#{deps[:namespace]}_#{deps[:name]}"
+              graph[node.name].add_dependency(service: graph[dependency_name], latency: deps[:latency])
+            end
+          end
           if service[:dependancies]
             service[:dependancies].each do |deps|
-              dependancy_name = "#{service[:organization]}_#{deps[:namespace]}_#{deps[:name]}"
-              graph[node.name].add_dependancy(service: graph[dependancy_name], latency: deps[:latency])
+              dependency_name = "#{service[:organization]}_#{deps[:namespace]}_#{deps[:name]}"
+              graph[node.name].add_dependency(service: graph[dependency_name], latency: deps[:latency])
             end
           end
         end
