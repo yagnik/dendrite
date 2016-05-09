@@ -58,7 +58,7 @@ module Dendrite
 
     def test_valid_returns_true_if_no_error_in_graph
       service_graph << service_foo
-      service_graph << service_bar
+      service_graph << ServiceNode.new(valid_service.merge({name: 'service_bar', ports: {advertised_port: 8082}}))
       service_foo.add_dependency(service: service_bar, latency: 1)
       assert service_graph.valid?
     end
