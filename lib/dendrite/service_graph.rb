@@ -20,14 +20,24 @@ module Dendrite
     end
 
     def valid?
-      services.values.collect(&:valid?).all?
+      services.values.collect(&:valid?).all? &&
+      services.values.group_by(&:advertised_port).all? do |port, svc|
+        svc.length == 1
+      end
     end
 
     def errors
-      services.inject({}) do |hash, (name, service)|
+      hash = services.inject({}) do |hash, (name, service)|
         hash[name] = service.errors.messages if service.errors.messages.length > 0
         hash
       end
+      services.values.group_by(&:advertised_port).each do |port, svc|
+        if svc.length > 1
+          hash[:port_collisions] ||= {}
+          hash[:port_collisions][port] = svc.collect(&:name)
+        end
+      end
+      return hash
     end
   end
 end
