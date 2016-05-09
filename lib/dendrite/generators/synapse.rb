@@ -10,6 +10,11 @@ module Dendrite
           end
         end
         @services = dep.uniq
+        @services.group_by { |service| service.advertised_port }.each do |port, services|
+          if services.length > 1
+            raise PortCollission, "Port collission between #{services.collect(&:name).join(',')}"
+          end
+        end
         @services = @services.collect { |service| ServiceConfig.new(service)}
       end
 

@@ -10,6 +10,7 @@ module Dendrite
   InvalidData = Class.new(Error)
   UnknownService = Class.new(Error)
   DuplicateService = Class.new(Error)
+  PortCollission = Class.new(Error)
 
   class Config
     class << self

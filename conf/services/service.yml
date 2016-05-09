@@ -12,11 +12,14 @@ services:
       min_instance_count: 1
       max_instance_count: 5
     ports:
-      advertised_port: 8081
+      advertised_port: 8082
       listening_port: 8080
     dependancies:
       - namespace: cams
         name: cat
+        latency: foo
+      - namespace: cams
+        name: foobar
         latency: foo
   - name: cat
     type: tomcat
