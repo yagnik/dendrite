@@ -25,5 +25,5 @@ raise Dendrite::InvalidData unless graph.valid?
 raise Dendrite::UnknownService unless services.collect {|service_name| graph[service_name]}.all?
 
 Dendrite::Config.custom_frontend!(name: "custom_#{options[:service_name]}", port: options[:port], backend_name: options[:service_name])
-synapse = Dendrite::Generators::Synapse.new(graph: graph, service_names: services)
+synapse = Dendrite::Generators::Synapse.new(graph: graph, service_names: services, proxy: true)
 Dendrite::IO.write(data: synapse.to_yaml, destination: Dendrite::Config.synapse_config_path)
