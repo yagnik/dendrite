@@ -15,19 +15,19 @@ OptionParser.new do |opts|
 end.parse!
 
 Dendrite::Config.load(source: options[:config])
+graph = Dendrite::IO.load(source: Dendrite::Config.services_source)
+
 services = begin
   Dendrite::IO.read(source: Dendrite::Config.nerve_config_path)[:services].keys
 rescue
   []
 end.collect(&:to_s)
-graph = Dendrite::IO.load(source: Dendrite::Config.services_source)
+services += options[:service_name].split(',')
+services.uniq!
 
 raise Dendrite::InvalidData unless graph.valid?
 raise Dendrite::UnknownService unless services.collect {|service_name| graph[service_name]}.all?
-raise Dendrite::UnknownService unless options[:service_name].split(',').collect{|s| graph[s]}.all?
 
-services += options[:service_name].split(',')
-services.uniq!
 synapse = Dendrite::Generators::Synapse.new(graph: graph, service_names: services)
 Dendrite::IO.write(data: synapse.to_yaml, destination: Dendrite::Config.synapse_config_path)
 
