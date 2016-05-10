@@ -21,7 +21,9 @@ module Dendrite
 
     def valid?
       services.values.collect(&:valid?).all? &&
-      services.values.group_by(&:advertised_port).all? do |port, svc|
+      services.values.group_by(&:advertised_port)
+                     .reject {|port, svc| port == nil}
+                     .all? do |port, svc|
         svc.length == 1
       end
     end
@@ -31,7 +33,9 @@ module Dendrite
         hash[name] = service.errors.messages if service.errors.messages.length > 0
         hash
       end
-      services.values.group_by(&:advertised_port).each do |port, svc|
+      services.values.group_by(&:advertised_port)
+                     .reject {|port, svc| port == nil}
+                     .each do |port, svc|
         if svc.length > 1
           hash[:port_collisions] ||= {}
           hash[:port_collisions][port] = svc.collect(&:name)
