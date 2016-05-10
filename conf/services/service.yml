@@ -12,8 +12,8 @@ services:
       min_instance_count: 1
       max_instance_count: 5
     ports:
-      advertised_port: 8082
-      listening_port: 8080
+      loadbalancer_port: 8082
+      service_port: 8080
     dependencies:
       - namespace: cams
         name: cat
@@ -30,8 +30,8 @@ services:
       min_instance_count: 1
       max_instance_count: 5
     ports:
-      advertised_port: 8081
-      listening_port: 8080
+      loadbalancer_port: 8081
+      service_port: 8080
     dependencies:
       - namespace: cams
         name: foobar
@@ -45,6 +45,6 @@ services:
       min_instance_count: 1
       max_instance_count: 5
     ports:
-      advertised_port: 8083
-      listening_port: 8080
+      loadbalancer_port: 8083
+      service_port: 8080
     dependencies: []

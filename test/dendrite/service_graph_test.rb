@@ -21,8 +21,8 @@ module Dendrite
           max_instance_count: 5
         },
         ports: {
-          advertised_port: 8081,
-          listening_port: 8080
+          loadbalancer_port: 8081,
+          service_port: 8080
         }
       }
     end
@@ -58,7 +58,7 @@ module Dendrite
 
     def test_valid_returns_true_if_no_error_in_graph
       service_graph << service_foo
-      service_graph << ServiceNode.new(valid_service.merge({name: 'service_bar', ports: {advertised_port: 8082}}))
+      service_graph << ServiceNode.new(valid_service.merge({name: 'service_bar', ports: {loadbalancer_port: 8082}}))
       service_foo.add_dependency(service: service_bar, latency: 1)
       assert service_graph.valid?
     end
@@ -73,8 +73,8 @@ module Dendrite
       node = ServiceNode.new(valid_service.merge({name: 'service_foo', lead_email: nil}))
       service_graph << node
       refute service_graph.valid?
-      assert_equal service_graph.errors[node.name].length, 1
-      assert_match service_graph.errors[node.name][:lead_email].first, "can't be blank"
+      assert_equal service_graph.errors.messages[node.name.to_sym].length, 1
+      assert_match service_graph.errors.messages[node.name.to_sym].first[:lead_email].first, "can't be blank"
     end
   end
 end

@@ -11,9 +11,9 @@ module Dendrite
         end
       end
 
-      ports.each do |depname, dep|
-        if dep.invalid?
-          dep.errors.each do |key, value|
+      ports.each do |name, prt|
+        if prt.invalid?
+          prt.errors.each do |key, value|
             errors.add "port_#{key}", value
           end
         end
@@ -116,12 +116,12 @@ module Dendrite
       "#{organization}_#{namespace}_#{@name}" if @name
     end
 
-    def listening_port
-      ports[:listening_port].port if ports[:listening_port]
+    def service_port
+      ports[:service_port].port if ports[:service_port]
     end
 
-    def advertised_port
-      ports[:advertised_port].port if ports[:advertised_port]
+    def loadbalancer_port
+      ports[:loadbalancer_port].port if ports[:loadbalancer_port]
     end
 
     def add_dependency(service:, latency:)

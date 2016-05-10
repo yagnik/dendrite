@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+require 'dendrite'
+require 'optparse'
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: proxy [options]"
+  opts.on("-s", "--service SERVICE_NAME", "service name") do |v|
+    options[:service_name] = v
+  end
+
+  opts.on("-c", "--config CONFIG_FILE", "config file") do |v|
+    options[:config] = v
+  end
+
+  opts.on("-p", "--port PORT", "port") do |v|
+    options[:port] = v.to_i
+  end
+end.parse!
+
+Dendrite::Config.load(source: options[:config])
+services = [options[:service_name]]
+graph = Dendrite::IO.load(source: Dendrite::Config.services_source)
+raise Dendrite::InvalidData unless graph.valid?
+raise Dendrite::UnknownService unless services.collect {|service_name| graph[service_name]}.all?
+Dendrite::Config.custom_frontend!(name: "custom_#{options[:service_name]}", port: options[:port], backend_name: options[:service_name])
+synapse = Dendrite::Generators::Synapse.new(graph: graph, service_names: services)
+Dendrite::IO.write(data: synapse.to_yaml, destination: Dendrite::Config.synapse_config_path)

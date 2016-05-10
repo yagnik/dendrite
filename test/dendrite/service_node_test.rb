@@ -21,8 +21,8 @@ module Dendrite
           max_instance_count: 5
         },
         ports: {
-          advertised_port: 8081,
-          listening_port: 8080
+          loadbalancer_port: 8081,
+          service_port: 8080
         }
       }
     end

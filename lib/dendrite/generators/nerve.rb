@@ -4,11 +4,6 @@ module Dendrite
 
       def initialize(graph:, service_names:)
         super
-        @services.group_by { |service| service.listening_port }.each do |port, services|
-          if services.length > 1
-            raise PortCollision, "Port collission between #{services.collect(&:name).join(',')}"
-          end
-        end
         @services = @services.collect { |service| ServiceConfig.new(service)}
       end
 
@@ -32,7 +27,7 @@ module Dendrite
         def to_h
           {
             host: Dendrite::Config.public_ip,
-            port: service.listening_port,
+            port: service.service_port,
             labels: {
               dc: Dendrite::Config.dc,
               env: Dendrite::Config.env

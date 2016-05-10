@@ -1,16 +1,18 @@
 module Dendrite
   module Generators
     class Synapse < Base
-      def initialize(graph:, service_names:)
-        super
-        dep = []
-        @services.each do |service|
-          service.dependencies.each do |_, dependency|
-            dep << dependency.service
+      def initialize(graph:, service_names:, proxy: false)
+        super(graph: graph, service_names: service_names)
+        unless proxy
+          dep = []
+          @services.each do |service|
+            service.dependencies.each do |_, dependency|
+              dep << dependency.service
+            end
           end
+          @services = dep.uniq
         end
-        @services = dep.uniq
-        @services.group_by { |service| service.advertised_port }.each do |port, services|
+        @services.group_by { |service| service.loadbalancer_port }.each do |port, services|
           if services.length > 1
             raise PortCollision, "Port collission between #{services.collect(&:name).join(',')}"
           end
@@ -57,7 +59,7 @@ module Dendrite
         def haproxy_config
           {
             haproxy: {
-              port: service.advertised_port,
+              port: service.loadbalancer_port,
               server_options: 'check inter 2s rise 3 fall 2',
               listen: [
                 'mode tcp'

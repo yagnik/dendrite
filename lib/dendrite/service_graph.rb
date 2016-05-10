@@ -1,9 +1,13 @@
 module Dendrite
   class ServiceGraph
+    include ActiveModel::Validations
     extend Forwardable
 
     attr_reader :services
     def_delegators :services, :each, :each
+
+    validate :validate_nodes
+    validate :collisions
 
     def initialize
       @services = {}
@@ -19,29 +23,19 @@ module Dendrite
       services.fetch(name)
     end
 
-    def valid?
-      services.values.collect(&:valid?).all? &&
-      services.values.group_by(&:advertised_port)
+    def collisions
+      services.values.group_by(&:loadbalancer_port)
                      .reject {|port, svc| port == nil}
-                     .all? do |port, svc|
-        svc.length == 1
+                     .select {|port, svc| svc.length > 1}
+                     .each do |port, svc|
+        errors.add("port_collisions_#{port}", "collision between #{svc.collect(&:name).join(',')}")
       end
     end
 
-    def errors
-      hash = services.inject({}) do |hash, (name, service)|
-        hash[name] = service.errors.messages if service.errors.messages.length > 0
-        hash
+    def validate_nodes
+      services.each do |name, service|
+        errors.add(name, service.errors.messages) unless service.valid?
       end
-      services.values.group_by(&:advertised_port)
-                     .reject {|port, svc| port == nil}
-                     .each do |port, svc|
-        if svc.length > 1
-          hash[:port_collisions] ||= {}
-          hash[:port_collisions][port] = svc.collect(&:name)
-        end
-      end
-      return hash
     end
   end
 end

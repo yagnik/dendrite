@@ -46,6 +46,16 @@ module Dendrite
         @@data[:synapse][:haproxy]
       end
 
+      def custom_frontend!(name:, port:, backend_name:)
+        data = {
+          "frontend #{name}": [
+            "bind :#{port}",
+            "use_backend #{backend_name}"
+          ]
+        }
+        @@data[:synapse][:haproxy][:extra_sections] = @@data[:synapse][:haproxy][:extra_sections].merge(data)
+      end
+
       def valid_types
         @@data[:dendrite][:valid_app_types]
       end
