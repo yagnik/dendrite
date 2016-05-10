@@ -7,7 +7,7 @@ module Dendrite
     let(:valid_service) do
      {
         organization: 'sd',
-        namespace: 'namespace',
+        component: 'component',
         lead_email: 'lead@email.com',
         team_email: 'team@email.com',
         name: nil,

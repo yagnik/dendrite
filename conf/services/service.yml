@@ -1,8 +1,8 @@
 organization: sd
-namespace: cams
+component: cams
 lead_email: vp@foobar.com
 team_email: team@foobar.com
-services:
+subcomponents:
   - name: foobar
     type: tomcat
     deploy:
@@ -15,11 +15,11 @@ services:
       loadbalancer_port: 8082
       service_port: 8080
     dependencies:
-      - namespace: cams
-        name: cat
+      - component: cams
+        subcomponent: cat
         latency: foo
-      - namespace: cams
-        name: foobar
+      - component: cams
+        subcomponent: foobar
         latency: foo
   - name: cat
     type: tomcat
@@ -33,8 +33,8 @@ services:
       loadbalancer_port: 8081
       service_port: 8080
     dependencies:
-      - namespace: cams
-        name: foobar
+      - component: cams
+        subcomponent: foobar
         latency: foo
   - name: baz
     type: tomcat

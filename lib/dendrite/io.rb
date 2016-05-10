@@ -15,13 +15,13 @@ module Dendrite
           node = ServiceNode.new(service)
           if service[:dependencies]
             service[:dependencies].each do |deps|
-              dependency_name = "#{service[:organization]}_#{deps[:namespace]}_#{deps[:name]}"
+              dependency_name = "#{service[:organization]}_#{deps[:component]}_#{deps[:subcomponent]}"
               graph[node.name].add_dependency(service: graph[dependency_name], latency: deps[:latency])
             end
           end
           if service[:dependancies]
             service[:dependancies].each do |deps|
-              dependency_name = "#{service[:organization]}_#{deps[:namespace]}_#{deps[:name]}"
+              dependency_name = "#{service[:organization]}_#{deps[:component]}_#{deps[:subcomponent]}"
               graph[node.name].add_dependency(service: graph[dependency_name], latency: deps[:latency])
             end
           end
@@ -43,9 +43,9 @@ module Dendrite
 
       def services_from_file(source:)
         data = read(source: source)
-        data[:services].collect do |service|
+        data[:subcomponents].collect do |service|
           service[:organization] = data[:organization]
-          service[:namespace]    = data[:namespace]
+          service[:component]    = data[:component]
           service[:lead_email]   = data[:lead_email]
           service[:team_email]   = data[:team_email]
           service

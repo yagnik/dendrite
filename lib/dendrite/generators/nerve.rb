@@ -21,7 +21,7 @@ module Dendrite
       ServiceConfig = Struct.new(:service) do
         extend Forwardable
         def_delegator :service, :name, :name
-        def_delegator :service, :namespace, :namespace
+        def_delegator :service, :component, :component
         def_delegator :service, :organization, :organization
 
         def to_h
@@ -39,7 +39,7 @@ module Dendrite
           {
             reporter_type: 'zookeeper',
             zk_hosts: Dendrite::Config.zk_hosts,
-            zk_path: "/smartstack/services/#{organization}/#{namespace}/#{service.real_name}/instances"
+            zk_path: "/smartstack/services/#{organization}/#{component}/#{service.real_name}/instances"
           }
         end
       end

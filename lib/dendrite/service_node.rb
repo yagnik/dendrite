@@ -75,15 +75,15 @@ module Dendrite
 
     VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i
 
-    attr_reader :organization, :namespace, :lead_email, :team_email,
+    attr_reader :organization, :component, :lead_email, :team_email,
                 :type, :deploy, :scale, :ports, :dependencies
                 # :name is set but magically
 
-    validates_presence_of :organization, :namespace, :lead_email, :team_email,
+    validates_presence_of :organization, :component, :lead_email, :team_email,
                           :name, :type, :deploy, :scale
 
     validates :organization, format: { with: /\A[a-z]+\z/, message: "only allows lowercase letters" }
-    validates :namespace, format: { with: /\A[a-z]+\z/, message: "only allows lowercase letters" }
+    validates :component, format: { with: /\A[a-z]+\z/, message: "only allows lowercase letters" }
     validates :lead_email, format: { with: VALID_EMAIL_REGEX, message: "invalid email format" }
     validates :team_email, format: { with: VALID_EMAIL_REGEX, message: "invalid email format" }
     validates :name, format: { with: /\A[a-z_]+\z/, message: "only allows lowercase letters" }
@@ -113,7 +113,7 @@ module Dendrite
     end
 
     def name
-      "#{organization}_#{namespace}_#{@name}" if @name
+      "#{organization}_#{component}_#{@name}" if @name
     end
 
     def service_port

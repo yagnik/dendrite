@@ -7,7 +7,7 @@ module Dendrite
     let(:valid_service) do
      {
         organization: 'sd',
-        namespace: 'namespace',
+        component: 'component',
         lead_email: 'lead@email.com',
         team_email: 'team@email.com',
         name: 'foo',
@@ -36,7 +36,7 @@ module Dendrite
     end
 
     def test_presence_validation
-      %i(namespace lead_email team_email name type deploy scale).each do |key|
+      %i(component lead_email team_email name type deploy scale).each do |key|
         service = ServiceNode.new(key => nil)
         refute service.valid?
         assert service.errors.messages[key], "#{key} should not be nil"
@@ -44,7 +44,7 @@ module Dendrite
     end
 
     def test_format_validation
-      %i(namespace name).each do |key|
+      %i(component name).each do |key|
         service = ServiceNode.new(valid_service)
         assert service.valid?
         service = ServiceNode.new(valid_service.merge({key => '1'}))
