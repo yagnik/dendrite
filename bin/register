@@ -14,6 +14,7 @@ OptionParser.new do |opts|
   end
 end.parse!
 
+puts "Loading config"
 Dendrite::Config.load(source: options[:config])
 graph = Dendrite::IO.load(source: Dendrite::Config.services_source)
 
@@ -28,8 +29,10 @@ services.uniq!
 raise Dendrite::InvalidData unless graph.valid?
 raise Dendrite::UnknownService unless services.collect {|service_name| graph[service_name]}.all?
 
+puts "Generating synapse"
 synapse = Dendrite::Generators::Synapse.new(graph: graph, service_names: services)
 Dendrite::IO.write(data: synapse.to_yaml, destination: Dendrite::Config.synapse_config_path)
 
+puts "Generating nerve"
 nerve = Dendrite::Generators::Nerve.new(graph: graph, service_names: services)
 Dendrite::IO.write(data: nerve.to_yaml, destination: Dendrite::Config.nerve_config_path)
