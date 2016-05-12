@@ -80,7 +80,7 @@ module Dendrite
                 # :name is set but magically
 
     validates_presence_of :organization, :component, :lead_email, :team_email,
-                          :name, :type, :deploy, :scale
+                          :name, :type
 
     validates :organization, format: { with: /\A[a-z]+\z/, message: "only allows lowercase letters" }
     validates :component, format: { with: /\A[a-z]+\z/, message: "only allows lowercase letters" }

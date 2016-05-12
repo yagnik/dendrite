@@ -36,7 +36,7 @@ module Dendrite
     end
 
     def test_presence_validation
-      %i(component lead_email team_email name type deploy scale).each do |key|
+      %i(component lead_email team_email name type).each do |key|
         service = ServiceNode.new(key => nil)
         refute service.valid?
         assert service.errors.messages[key], "#{key} should not be nil"
