@@ -99,7 +99,8 @@ module Dendrite
     validates :component, format: { with: /\A[0-9a-z]+\z/, message: "only allows lowercase letters" }
     validates :lead_email, format: { with: VALID_EMAIL_REGEX, message: "invalid email format" }
     validates :team_email, format: { with: VALID_EMAIL_REGEX, message: "invalid email format" }
-    validates :name, format: { with: /\A[0-9a-z]+\z/, message: "only allows lowercase letters" }
+    validates :real_name, format: { with: /\A[0-9a-z]+\z/, message: "only allows lowercase letters" }
+    validates :name, format: { with: /\A[0-9a-z_]+\z/, message: "only allows lowercase letters" }
     validates :type, inclusion: { in: -> (_) { Dendrite::Config.valid_types } , message: "%{value} is not a valid type" }
 
     def initialize(**args)
