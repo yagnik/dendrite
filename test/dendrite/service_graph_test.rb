@@ -62,7 +62,7 @@ module Dendrite
         service_graph['service_foo']
       end
     end
-    require 'pry'
+
     def test_valid_returns_true_if_no_error_in_graph
       service_graph << service_foo
       service_graph << ServiceNode.new(valid_service.merge({name: 'servicebar', ports: {loadbalancer_port: 8082}}))
