@@ -14,6 +14,9 @@ subcomponents:
     ports:
       loadbalancer_port: 8082
       service_port: 8080
+    telemetry:
+      health_url: /
+      notification_email: foo@bar.com
     dependencies:
       - component: cams
         subcomponent: cat

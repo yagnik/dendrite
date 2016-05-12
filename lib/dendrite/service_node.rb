@@ -31,6 +31,12 @@ module Dendrite
         end
       end
 
+      if telemetry && telemetry.invalid?
+        telemetry.errors.each do |key, value|
+          errors.add "telemetry_#{key}", value
+        end
+      end
+
       return errors.count == 0
     end
   end
@@ -38,6 +44,15 @@ module Dendrite
   class ServiceNode
     include ActiveModel::Validations
     prepend Validator
+
+    VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i
+
+    Telemetry = Struct.new(:health_url, :notification_email) do
+      include ActiveModel::Validations
+      validates_presence_of :health_url
+      validates_presence_of :notification_email
+      validates :notification_email, format: { with: ServiceNode::VALID_EMAIL_REGEX, message: "invalid email format" }
+    end
 
     Port = Struct.new(:name, :port) do
       include ActiveModel::Validations
@@ -73,10 +88,8 @@ module Dendrite
       validates_presence_of :package
     end
 
-    VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i
-
     attr_reader :organization, :component, :lead_email, :team_email,
-                :type, :deploy, :scale, :ports, :dependencies
+                :type, :deploy, :scale, :ports, :dependencies, :telemetry
                 # :name is set but magically
 
     validates_presence_of :organization, :component, :lead_email, :team_email,
@@ -101,6 +114,8 @@ module Dendrite
           @deploy = Deploy.new(v[:repository], v[:package]) if v != nil
         when :scale
           @scale = Scale.new(v[:max_instance_count], v[:min_instance_count]) if v != nil
+        when :telemetry
+          @telemetry = Telemetry.new(v[:health_url], v[:notification_email]) if v != nil
         else
           instance_variable_set("@#{k}", v)
         end
@@ -126,6 +141,24 @@ module Dendrite
 
     def add_dependency(service:, latency:)
       @dependencies[service.name] = Dependency.new(service, latency)
+    end
+
+    def to_h
+      data = {
+        organization: organization,
+        component: component,
+        name: real_name,
+        complete_name: name,
+        lead_email: lead_email,
+        team_email: team_email,
+        type: type,
+        ports: ports.values.collect(&:to_h),
+        dependencies: dependencies.keys
+      }
+      data.merge!({deploy: deploy.to_h}) if deploy
+      data.merge!({scale: scale.to_h}) if scale
+      data.merge!({telemetry: telemetry.to_h}) if telemetry
+      data
     end
   end
 end
