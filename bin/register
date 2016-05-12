@@ -12,6 +12,10 @@ OptionParser.new do |opts|
   opts.on("-c", "--config CONFIG_FILE", "config file") do |v|
     options[:config] = v
   end
+
+  opts.on("-e", "--environment ENVIRONMENT", "environment of default servers") do |v|
+    options[:env] = v
+  end
 end.parse!
 
 puts "Loading config"
@@ -30,7 +34,7 @@ raise Dendrite::InvalidData unless graph.valid?
 raise Dendrite::UnknownService unless services.collect {|service_name| graph[service_name]}.all?
 
 puts "Generating synapse"
-synapse = Dendrite::Generators::Synapse.new(graph: graph, service_names: services)
+synapse = Dendrite::Generators::Synapse.new(graph: graph, service_names: services, environment: options[:env])
 Dendrite::IO.write(data: synapse.to_yaml, destination: Dendrite::Config.synapse_config_path)
 
 puts "Generating nerve"

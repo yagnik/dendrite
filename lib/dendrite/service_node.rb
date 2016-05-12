@@ -37,6 +37,16 @@ module Dendrite
         end
       end
 
+      default_servers.each do |env, srv|
+        if srv.any?(&:invalid?)
+          srv.select(&:invalid?).each do |sr|
+            sr.errors.each do |key, value|
+              errors.add "default_servers_#{key}", value
+            end
+          end
+        end
+      end
+
       return errors.count == 0
     end
   end
@@ -46,6 +56,14 @@ module Dendrite
     prepend Validator
 
     VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i
+
+    DefaultServer = Struct.new(:environment, :host, :port) do
+      include ActiveModel::Validations
+      validates_presence_of :environment
+      validates_presence_of :host
+      validates_presence_of :port
+      validates :port, numericality: { only_integer: true }
+    end
 
     Telemetry = Struct.new(:health_url, :notification_email) do
       include ActiveModel::Validations
@@ -89,7 +107,8 @@ module Dendrite
     end
 
     attr_reader :organization, :component, :lead_email, :team_email,
-                :type, :deploy, :scale, :ports, :dependencies, :telemetry
+                :type, :deploy, :scale, :ports, :dependencies, :telemetry,
+                :default_servers
                 # :name is set but magically
 
     validates_presence_of :organization, :component, :lead_email, :team_email,
@@ -105,6 +124,7 @@ module Dendrite
 
     def initialize(**args)
       @ports = {}
+      @default_servers = {}
       args.each do |k,v|
         case k
         when :ports
@@ -117,6 +137,11 @@ module Dendrite
           @scale = Scale.new(v[:max_instance_count], v[:min_instance_count]) if v != nil
         when :telemetry
           @telemetry = Telemetry.new(v[:health_url], v[:notification_email]) if v != nil
+        when :default_servers
+          v.each do |node|
+            @default_servers[node[:environment]] ||= []
+            @default_servers[node[:environment]] << DefaultServer.new(node[:environment], node[:host], node[:port])
+          end
         else
           instance_variable_set("@#{k}", v)
         end
@@ -156,10 +181,10 @@ module Dendrite
         ports: ports.values.collect(&:to_h),
         dependencies: dependencies.keys
       }
-      data.merge!({deploy: deploy.to_h}) if deploy
-      data.merge!({scale: scale.to_h}) if scale
-      data.merge!({telemetry: telemetry.to_h}) if telemetry
-      data
+      data.merge!({deploy: deploy ? deploy.to_h : {}})
+      data.merge!({scale: scale ? scale.to_h : {}})
+      data.merge!({telemetry: telemetry ? telemetry.to_h : {}})
+      data.merge!({default_servers: default_servers.values.flatten.collect(&:to_h)})
     end
   end
 end

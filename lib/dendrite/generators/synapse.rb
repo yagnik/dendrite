@@ -1,7 +1,7 @@
 module Dendrite
   module Generators
     class Synapse < Base
-      def initialize(graph:, service_names:, proxy: false)
+      def initialize(graph:, service_names:, proxy: false, environment: :dev)
         super(graph: graph, service_names: service_names)
         unless proxy
           dep = []
@@ -17,7 +17,7 @@ module Dendrite
             raise PortCollision, "Port collission between #{services.collect(&:name).join(',')}"
           end
         end
-        @services = @services.collect { |service| ServiceConfig.new(service)}
+        @services = @services.collect { |service| ServiceConfig.new(service, environment)}
       end
 
       def to_h
@@ -36,14 +36,33 @@ module Dendrite
 
       private
 
-      ServiceConfig = Struct.new(:service) do
+      ServiceConfig = Struct.new(:service, :environment) do
         extend Forwardable
         def_delegator :service, :name, :name
         def_delegator :service, :component, :component
         def_delegator :service, :organization, :organization
+        def_delegator :service, :default_servers, :default_servers
 
         def to_h
           discovery_config.merge(haproxy_config)
+                          .merge(default_servers_config)
+        end
+
+        def default_servers_config
+          servers = default_servers[environment]
+          if servers
+            {
+              default_servers: servers.enum_for(:each_with_index).collect do |server, i|
+                data = server.to_h.merge({
+                  name: "default_#{name}_#{i}"
+                })
+                data.delete(:environment)
+                data
+              end
+            }
+          else
+            {}
+          end
         end
 
         def discovery_config

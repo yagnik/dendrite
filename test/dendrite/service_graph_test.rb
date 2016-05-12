@@ -23,16 +23,23 @@ module Dendrite
         ports: {
           loadbalancer_port: 8081,
           service_port: 8080
-        }
+        },
+        default_servers: [
+          {
+            host: "192.168.1.1",
+            port: 80,
+            environment: "stg"
+          }
+        ]
       }
     end
 
     let(:service_foo) do
-      ServiceNode.new(valid_service.merge({name: 'service_foo'}))
+      ServiceNode.new(valid_service.merge({name: 'servicefoo'}))
     end
 
     let(:service_bar) do
-      ServiceNode.new(valid_service.merge({name: 'service_bar'}))
+      ServiceNode.new(valid_service.merge({name: 'servicebar'}))
     end
 
     let(:service_graph) do
@@ -55,10 +62,10 @@ module Dendrite
         service_graph['service_foo']
       end
     end
-
+    require 'pry'
     def test_valid_returns_true_if_no_error_in_graph
       service_graph << service_foo
-      service_graph << ServiceNode.new(valid_service.merge({name: 'service_bar', ports: {loadbalancer_port: 8082}}))
+      service_graph << ServiceNode.new(valid_service.merge({name: 'servicebar', ports: {loadbalancer_port: 8082}}))
       service_foo.add_dependency(service: service_bar, latency: 1)
       assert service_graph.valid?
     end

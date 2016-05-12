@@ -17,6 +17,13 @@ subcomponents:
     telemetry:
       health_url: /
       notification_email: foo@bar.com
+    default_servers:
+      - host: 192.168.1.1
+        port: 8080
+        environment: stg
+      - host: 50.312.312.312
+        port: 8080
+        environment: prd
     dependencies:
       - component: cams
         subcomponent: cat
