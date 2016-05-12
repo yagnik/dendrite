@@ -43,16 +43,6 @@ module Dendrite
       end
     end
 
-    def test_format_validation
-      %i(component name).each do |key|
-        service = ServiceNode.new(valid_service)
-        assert service.valid?
-        service = ServiceNode.new(valid_service.merge({key => '1'}))
-        refute service.valid?
-        assert service.errors.messages[key], "#{key} should not have numbers"
-      end
-    end
-
     def test_type_validation
       service = ServiceNode.new(valid_service)
       assert service.valid?
