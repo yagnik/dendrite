@@ -79,6 +79,7 @@ module Dendrite
           {
             haproxy: {
               port: service.loadbalancer_port,
+              bind_address: '127.0.0.1',
               server_options: 'check inter 2s rise 3 fall 2',
               listen: [
                 'mode tcp'
