@@ -1,6 +1,8 @@
 module Dendrite
   module Generators
     class Nerve < Base
+      # We use this for batch jobs so they can register
+      DEFAULT_PORT = 1111
 
       def initialize(graph:, service_names:)
         super
@@ -27,7 +29,7 @@ module Dendrite
         def to_h
           {
             host: Dendrite::Config.public_ip,
-            port: service.service_port,
+            port: service.service_port || DEFAULT_PORT,
             labels: {
               dc: Dendrite::Config.dc,
               env: Dendrite::Config.env
