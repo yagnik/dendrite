@@ -28,9 +28,13 @@ subcomponents:
       - component: cams
         subcomponent: cat
         latency: foo
+        identifier: barbaz
       - component: cams
         subcomponent: foobar
         latency: foo
+        identifier: barbas3
+    metadata:
+      foo: bar
   - name: cat
     type: tomcat
     deploy:
