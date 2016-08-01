@@ -30,7 +30,7 @@ module Dendrite
     def test_add_dependency
       service1 = ServiceNode.new(valid_service)
       service2 = ServiceNode.new(valid_service.merge({name: "another_service"}))
-      service1.add_dependency(service: service2, latency: 1)
+      service1.add_dependency(service: service2, latency: 1, identifier: nil)
       assert_equal service1.dependencies.length, 1
       assert_equal service1.dependencies[service2.name].service, service2
     end

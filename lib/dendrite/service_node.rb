@@ -79,7 +79,7 @@ module Dendrite
       validates :port, numericality: { only_integer: true }
     end
 
-    Dependency = Struct.new(:service, :latency) do
+    Dependency = Struct.new(:service, :latency, :identifier) do
       include ActiveModel::Validations
       validates_presence_of :service
       validates_presence_of :latency
@@ -108,7 +108,7 @@ module Dendrite
 
     attr_reader :organization, :component, :lead_email, :team_email,
                 :type, :deploy, :scale, :ports, :dependencies, :telemetry,
-                :default_servers
+                :default_servers, :metadata
                 # :name is set but magically
 
     validates_presence_of :organization, :component, :lead_email, :team_email,
@@ -142,6 +142,8 @@ module Dendrite
             @default_servers[node[:environment]] ||= []
             @default_servers[node[:environment]] << DefaultServer.new(node[:environment], node[:host], node[:port])
           end
+        when :metadata
+          @metadata = Metadata.new(v)
         else
           instance_variable_set("@#{k}", v)
         end
@@ -165,8 +167,8 @@ module Dendrite
       ports[:loadbalancer_port].port if ports[:loadbalancer_port]
     end
 
-    def add_dependency(service:, latency:)
-      @dependencies[service.name] = Dependency.new(service, latency)
+    def add_dependency(service:, latency:, identifier:)
+      @dependencies[service.name] = Dependency.new(service, latency, identifier)
     end
 
     def to_h

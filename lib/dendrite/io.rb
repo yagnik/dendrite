@@ -16,7 +16,7 @@ module Dendrite
           if service[:dependencies]
             service[:dependencies].each do |deps|
               dependency_name = "#{service[:organization]}_#{deps[:component]}_#{deps[:subcomponent]}"
-              graph[node.name].add_dependency(service: graph[dependency_name], latency: deps[:latency])
+              graph[node.name].add_dependency(service: graph[dependency_name], latency: deps[:latency], identifier: deps[:identifier])
             end
           end
         end
