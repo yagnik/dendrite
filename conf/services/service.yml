@@ -2,9 +2,15 @@ organization: sd
 component: cams
 lead_email: vp@foobar.com
 team_email: team@foobar.com
+users: &users
+  name1:
+  name2:
 subcomponents:
   - name: foobar
     type: tomcat
+    users:
+      <<: *users
+      name3:
     deploy:
       repository: git@github.com:yagnik/dendrite
       package: dendrite

@@ -106,9 +106,11 @@ module Dendrite
       validates_presence_of :package
     end
 
+    Metadata = OpenStruct
+
     attr_reader :organization, :component, :lead_email, :team_email,
                 :type, :deploy, :scale, :ports, :dependencies, :telemetry,
-                :default_servers, :metadata
+                :default_servers, :metadata, :users
                 # :name is set but magically
 
     validates_presence_of :organization, :component, :lead_email, :team_email,
@@ -144,6 +146,8 @@ module Dendrite
           end
         when :metadata
           @metadata = Metadata.new(v)
+        when :users
+          @users = v.keys
         else
           instance_variable_set("@#{k}", v)
         end

@@ -3,6 +3,7 @@ require 'json'
 require 'active_model'
 require 'socket'
 require 'forwardable'
+require 'ostruct'
 require 'dendrite/version'
 
 module Dendrite
