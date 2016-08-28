@@ -47,7 +47,7 @@ module Dendrite
       end
 
       def services_from_folder(source:)
-        Dir["#{source}/*.yml"].collect {|file| services_from_file(source: file)}
+        Dir["#{source}/**/*.yml"].collect {|file| services_from_file(source: file)}
                               .flatten
       end
     end
