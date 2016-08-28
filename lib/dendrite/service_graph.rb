@@ -5,6 +5,8 @@ module Dendrite
 
     attr_reader :services
     def_delegators :services, :each, :each
+    def_delegators :services, :keys, :keys
+    def_delegators :services, :values, :values
 
     validate :validate_nodes
     validate :collisions
@@ -15,7 +17,7 @@ module Dendrite
 
     def <<(service)
       raise KeyError unless service.name
-      raise DuplicateService if services.keys.include?(service.name)
+      raise DuplicateService, service.name if services.keys.include?(service.name)
       services[service.name] = service
     end
 
