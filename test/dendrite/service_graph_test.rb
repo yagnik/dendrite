@@ -1,4 +1,5 @@
 require 'test_helper'
+require 'pry'
 
 module Dendrite
   class ServiceGraphTest < Minitest::Test

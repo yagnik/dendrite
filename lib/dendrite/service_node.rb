@@ -92,12 +92,15 @@ module Dendrite
       end
     end
 
-    Scale = Struct.new(:max_instance_count, :min_instance_count) do
+    Scale = Struct.new(:max_instance_count, :min_instance_count, :min_memory, :min_cpu) do
       include ActiveModel::Validations
       validates_presence_of :max_instance_count
       validates_presence_of :min_instance_count
+      # @TODO add validation for max and min
       validates :max_instance_count, numericality: { only_integer: true }
       validates :min_instance_count, numericality: { only_integer: true }
+      # validates :min_memory, numericality: { only_integer: true }
+      # validates :min_cpu, numericality: { only_integer: true }
     end
 
     Deploy = Struct.new(:repository, :package) do
@@ -136,7 +139,7 @@ module Dendrite
         when :deploy
           @deploy = Deploy.new(v[:repository], v[:package]) if v != nil
         when :scale
-          @scale = Scale.new(v[:max_instance_count], v[:min_instance_count]) if v != nil
+          @scale = Scale.new(v[:max_instance_count], v[:min_instance_count], v[:min_memory], v[:min_cpu]) if v != nil
         when :telemetry
           @telemetry = Telemetry.new(v[:health_url], v[:notification_email]) if v != nil
         when :default_servers
