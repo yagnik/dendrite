@@ -79,13 +79,32 @@ module Dendrite
           {
             haproxy: {
               port: service.loadbalancer_port,
-              bind_address: '127.0.0.1',
+              bind_address: bind_address,
               server_options: 'check inter 2s rise 3 fall 2',
-              listen: [
-                'mode tcp'
-              ]
+              listen: mode
             }
           }
+        end
+
+        def mode
+          if metadata && metadata.sticky_session
+            [
+              'mode http',
+              'stick-table type string len 200 size 500m expire 30m',
+              "stick store-response res.cook(#{metadata.sticky_session})",
+              "stick match req.cook(#{metadata.sticky_session})"
+            ]
+          else
+            ['mode tcp']
+          end
+        end
+
+        def bind_address
+          if metadata && metadata.bind_address
+            metadata.bind_address
+          else
+            '127.0.0.1'
+          end
         end
       end
     end
