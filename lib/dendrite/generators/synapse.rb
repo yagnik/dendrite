@@ -42,6 +42,8 @@ module Dendrite
         def_delegator :service, :component, :component
         def_delegator :service, :organization, :organization
         def_delegator :service, :default_servers, :default_servers
+        def_delegator :service, :metadata, :metadata
+
 
         def to_h
           discovery_config.merge(haproxy_config)
