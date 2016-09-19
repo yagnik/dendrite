@@ -102,11 +102,7 @@ module Dendrite
         end
 
         def bind_address
-          if metadata && metadata.bind_address
-            metadata.bind_address
-          else
-            '127.0.0.1'
-          end
+          Dendrite::Config.bind_to_all? ? '0.0.0.0' : '127.0.0.1'
         end
       end
     end

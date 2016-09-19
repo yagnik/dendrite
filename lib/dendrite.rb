@@ -61,6 +61,10 @@ module Dendrite
         @@data[:dendrite][:valid_app_types]
       end
 
+      def bind_to_all?
+        @@data[:dendrite][:bind_to_all] != nil
+      end
+
       def public_ip
         ip = Socket.ip_address_list.detect{|intf| intf.ipv4_private?} ||
              Socket.ip_address_list.detect{|intf| intf.ipv4? && !intf.ipv4_loopback? && !intf.ipv4_multicast? && !intf.ipv4_private?}
