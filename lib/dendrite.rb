@@ -47,6 +47,13 @@ module Dendrite
         @@data[:synapse][:haproxy]
       end
 
+      def peer
+        if @@data[:synapse][:haproxy][:extra_sections]
+          key = @@data[:synapse][:haproxy][:extra_sections].keys.collect(&:to_s).find {|k| k.include?("peers")}
+          key ? key.split("peers").last.strip : nil
+        end
+      end
+
       def custom_frontend!(name:, port:, backend_name:)
         data = {
           "frontend #{name}": [

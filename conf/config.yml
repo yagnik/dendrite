@@ -42,6 +42,8 @@ synapse:
     - option   redispatch
     - balance  roundrobin
     extra_sections:
+      peers syncinghaproxy:
+      - peer haproxy1 192.168.0.1:1024
       listen stats :9999:
       - mode http
       - stats enable

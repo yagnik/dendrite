@@ -90,9 +90,10 @@ module Dendrite
 
         def mode
           if metadata && metadata.sticky_session
+            peer = Dendrite::Config.peer ? " peers #{Dendrite::Config.peer}": ''
             [
               'mode http',
-              'stick-table type string len 200 size 500m expire 30m',
+              "stick-table type string len 200 size 500m expire 30m#{peer}",
               "stick store-response res.cook(#{metadata.sticky_session})",
               "stick match req.cook(#{metadata.sticky_session})"
             ]

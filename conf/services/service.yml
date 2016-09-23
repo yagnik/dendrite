@@ -41,6 +41,7 @@ subcomponents:
         identifier: barbas3
     metadata:
       foo: bar
+      sticky_session: sessionkey
   - name: cat
     type: tomcat
     deploy:
