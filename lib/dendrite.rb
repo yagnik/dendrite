@@ -47,6 +47,10 @@ module Dendrite
         @@data[:synapse][:haproxy]
       end
 
+      def server_options
+        @@data[:synapse][:server_options]
+      end
+
       def peer
         if @@data[:synapse][:haproxy][:extra_sections]
           key = @@data[:synapse][:haproxy][:extra_sections].keys.collect(&:to_s).find {|k| k.include?("peers")}
