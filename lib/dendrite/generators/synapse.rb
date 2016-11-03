@@ -42,6 +42,7 @@ module Dendrite
         def_delegator :service, :component, :component
         def_delegator :service, :organization, :organization
         def_delegator :service, :default_servers, :default_servers
+        def_delegator :service, :domain_names, :domain_names
         def_delegator :service, :metadata, :metadata
 
 
@@ -78,14 +79,23 @@ module Dendrite
         end
 
         def haproxy_config
-          {
+          data = {
             haproxy: {
               port: service.loadbalancer_port,
               bind_address: bind_address,
               server_options: Dendrite::Config.server_options,
-              listen: mode
+              listen: mode,
+              backend_order: metadata && metadata.sticky_session ? 'asc' : nil
             }
           }
+
+          if domain_names[environment] && domain_names[environment].length > 0
+            data[:haproxy][:shared_frontend] = [
+              "acl is_#{name} hdr_dom(host) " + domain_names[environment].collect {|dns| " -i #{dns.domain_name} "}.join ,
+              "use_backend #{name} if is_#{name}"
+            ]
+          end
+          return data
         end
 
         def mode

@@ -24,6 +24,9 @@ synapse:
     do_writes: true
     do_reloads: true
     do_socket: false
+    shared_frontend:
+    - "bind 127.0.0.1:8082"
+    - "bind 127.0.0.1:8089"
     global:
     - daemon
     - user haproxy

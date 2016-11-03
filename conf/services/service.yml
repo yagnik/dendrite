@@ -23,11 +23,16 @@ subcomponents:
     telemetry:
       health_url: /
       notification_email: foo@bar.com
+    domain_names:
+      - domain_name: foobar.com
+        environment: prd
+      - domain_name: foobar2.com
+        environment: prd
     default_servers:
       - host: 192.168.1.1
         port: 8080
         environment: stg
-      - host: 50.312.312.312
+      - host: 192.168.1.2
         port: 8080
         environment: prd
     dependencies:

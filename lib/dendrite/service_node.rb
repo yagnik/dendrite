@@ -65,6 +65,12 @@ module Dendrite
       validates :port, numericality: { only_integer: true }
     end
 
+    DomainName = Struct.new(:environment, :domain_name) do
+      include ActiveModel::Validations
+      validates_presence_of :environment
+      validates_presence_of :domain_name
+    end
+
     Telemetry = Struct.new(:health_url, :notification_email) do
       include ActiveModel::Validations
       validates_presence_of :health_url
@@ -113,7 +119,7 @@ module Dendrite
 
     attr_reader :organization, :component, :lead_email, :team_email,
                 :type, :deploy, :scale, :ports, :dependencies, :telemetry,
-                :default_servers, :metadata, :users
+                :default_servers, :metadata, :users, :domain_names
                 # :name is set but magically
 
     validates_presence_of :organization, :component, :lead_email, :team_email,
@@ -130,6 +136,7 @@ module Dendrite
     def initialize(**args)
       @ports = {}
       @default_servers = {}
+      @domain_names = {}
       args.each do |k,v|
         case k
         when :ports
@@ -146,6 +153,11 @@ module Dendrite
           v.each do |node|
             @default_servers[node[:environment]] ||= []
             @default_servers[node[:environment]] << DefaultServer.new(node[:environment], node[:host], node[:port])
+          end
+        when :domain_names
+          v.each do |dns|
+            @domain_names[dns[:environment]] ||= []
+            @domain_names[dns[:environment]] << DomainName.new(dns[:environment], dns[:domain_name])
           end
         when :metadata
           @metadata = Metadata.new(v)
