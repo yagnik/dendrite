@@ -107,6 +107,8 @@ module Dendrite
               "stick store-response res.cook(#{metadata.sticky_session})",
               "stick match req.cook(#{metadata.sticky_session})"
             ]
+          elsif domain_names[environment] && domain_names[environment].length > 0
+            ['mode http']
           else
             ['mode tcp']
           end
