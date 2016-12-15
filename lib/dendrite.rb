@@ -72,6 +72,18 @@ module Dendrite
         @@data[:dendrite][:valid_app_types]
       end
 
+      def http_types
+        @@data[:dendrite][:http_app_types] || []
+      end
+
+      def cookie
+        @@data[:dendrite][:cookie] || "COOKME"
+      end
+
+      def sticky
+        @@data[:dendrite][:sticky]
+      end
+
       def bind_to_all?
         @@data[:dendrite][:bind_to_all] != nil
       end

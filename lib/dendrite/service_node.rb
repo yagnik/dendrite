@@ -63,6 +63,7 @@ module Dendrite
       validates_presence_of :host
       validates_presence_of :port
       validates :port, numericality: { only_integer: true }
+      validates_inclusion_of :port, :in => 1..65535
     end
 
     DomainName = Struct.new(:environment, :domain_name) do
@@ -83,6 +84,7 @@ module Dendrite
       validates_presence_of :name
       validates_presence_of :port
       validates :port, numericality: { only_integer: true }
+      validates_inclusion_of :port, :in => 1..65535
     end
 
     Dependency = Struct.new(:service, :latency, :identifier) do

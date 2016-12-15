@@ -29,10 +29,10 @@ subcomponents:
       - domain_name: foobar2.com
         environment: prd
     default_servers:
-      - host: 192.168.1.1
+      - host: 0.0.0.0
         port: 8080
         environment: stg
-      - host: 192.168.1.2
+      - host: 0.0.0.0
         port: 8080
         environment: prd
     dependencies:
@@ -48,7 +48,7 @@ subcomponents:
       foo: bar
       sticky_session: sessionkey
   - name: cat
-    type: tomcat
+    type: mysql
     deploy:
       repository: git@github.com:yagnik/dendrite
       package: dendrite

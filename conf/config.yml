@@ -4,6 +4,8 @@ dendrite:
   env: dev
   zk_hosts:
     - localhost:2181
+  bind_to_all: true
+  sticky: true
   nerve_config_path: /opt/smartstack/conf/nerve.yml
   synapse_config_path: /opt/smartstack/conf/synapse.yml
   services_source: conf/services
@@ -14,6 +16,8 @@ dendrite:
     - aerospike
     - cassandra
     - jar
+  http_app_types:
+    - tomcat
 
 synapse:
   server_options: check inter 2s rise 3 fall 2
@@ -47,7 +51,7 @@ synapse:
     - balance  roundrobin
     extra_sections:
       peers syncinghaproxy:
-      - peer haproxy1 192.168.0.1:1024
+      - peer foobar 0.0.0.0:1024
       listen stats :9999:
       - mode http
       - stats enable

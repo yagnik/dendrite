@@ -85,7 +85,8 @@ module Dendrite
               bind_address: bind_address,
               server_options: Dendrite::Config.server_options,
               listen: mode,
-              backend_order: metadata && metadata.sticky_session ? 'asc' : nil
+              cookie_value_method: 'hash',
+              backend_order: (metadata && metadata.sticky_session) || Dendrite::Config.sticky ? 'asc' : nil
             }
           }
 
@@ -99,16 +100,17 @@ module Dendrite
         end
 
         def mode
-          if metadata && metadata.sticky_session
+          if Dendrite::Config.http_types.include?(service.type)
+            arr = ['mode http']
+            key = metadata && metadata.sticky_session ? metadata.sticky_session : Dendrite::Config.cookie
             peer = Dendrite::Config.peer ? " peers #{Dendrite::Config.peer}": ''
-            [
-              'mode http',
-              "stick-table type string len 200 size 500m expire 30m#{peer}",
-              "stick store-response res.cook(#{metadata.sticky_session})",
-              "stick match req.cook(#{metadata.sticky_session})"
-            ]
-          elsif domain_names[environment] && domain_names[environment].length > 0
-            ['mode http']
+
+            arr << "cookie #{Dendrite::Config.cookie} insert nocache"
+            arr << "stick-table type string len 200 size 500m expire 30m#{peer}"
+            arr << "stick store-response res.cook(#{key})"
+            arr << "stick match req.cook(#{key})"
+
+            arr
           else
             ['mode tcp']
           end
