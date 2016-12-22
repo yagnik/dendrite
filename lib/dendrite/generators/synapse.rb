@@ -106,7 +106,7 @@ module Dendrite
             peer = Dendrite::Config.peer ? " peers #{Dendrite::Config.peer}": ''
 
             arr << "cookie #{Dendrite::Config.cookie} insert nocache"
-            if (metadata && metadata.sticky_session) || Dendrite::Config.sticky
+            if Dendrite::Config.sticky && metadata && metadata.sticky_session
               arr << "stick-table type string len 200 size 500m expire 30m#{peer}"
               arr << "stick store-response res.cook(#{key})"
               arr << "stick match req.cook(#{key})"
