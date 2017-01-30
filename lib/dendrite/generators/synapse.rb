@@ -101,11 +101,16 @@ module Dendrite
 
         def mode
           if Dendrite::Config.http_types.include?(service.type)
-            arr = ['mode http']
+            arr = ['mode http', 'option httplog']
             key = metadata && metadata.sticky_session ? metadata.sticky_session : Dendrite::Config.cookie
             peer = Dendrite::Config.peer ? " peers #{Dendrite::Config.peer}": ''
 
-            arr << "cookie #{Dendrite::Config.cookie} insert nocache"
+            if Dendrite::Config.sticky
+              if !(metadata && metadata.sticky_session)
+                arr << "cookie #{key} insert nocache"
+              end
+            end
+
             if Dendrite::Config.sticky && metadata && metadata.sticky_session
               arr << "stick-table type string len 200 size 500m expire 30m#{peer}"
               arr << "stick store-response res.cook(#{key})"
@@ -113,7 +118,7 @@ module Dendrite
             end
             arr
           else
-            ['mode tcp']
+            ['mode tcp', 'option tcplog']
           end
         end
 

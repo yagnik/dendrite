@@ -64,14 +64,14 @@ module Dendrite
       validates_presence_of :port
       validates :port, numericality: { only_integer: true }
       validates_inclusion_of :port, :in => 1..65535
-      validate :host_is_correct
-      def host_is_correct
-        if URI.parse(host).host
-          unless URI.parse(host).host == host
-            errors.add(:host, "host should be valid host without protocol or trailing slashes")
-          end
-        end
-      end
+      # validate :host_is_correct
+      # def host_is_correct
+      #   if ::URI.parse(host).host
+      #     unless ::URI.parse(host).host == host
+      #       errors.add(:host, "host should be valid host without protocol or trailing slashes")
+      #     end
+      #   end
+      # end
     end
 
     DomainName = Struct.new(:environment, :domain_name) do
