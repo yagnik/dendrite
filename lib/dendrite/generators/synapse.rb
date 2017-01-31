@@ -1,17 +1,26 @@
 module Dendrite
   module Generators
     class Synapse < Base
-      def initialize(graph:, service_names:, proxy: false, environment: :dev)
+      attr_reader :read_only
+      def initialize(graph:, service_names:, environment: :dev)
         super(graph: graph, service_names: service_names)
-        unless proxy
-          dep = []
-          @services.each do |service|
-            service.dependencies.each do |_, dependency|
-              dep << dependency.service
+        dep = []
+        read_only = {}
+        @services.each do |service|
+          service.dependencies.each do |_, dependency|
+            dep << dependency.service
+            if read_only.keys.include?(dependency.service.name)
+              if read_only[dependency.service.name] != dependency.read_only
+                raise "Trying to add r/o and r/w for same service"
+              end
+            else
+              read_only[dependency.service.name] = dependency.read_only
             end
           end
-          @services = dep.uniq
         end
+
+        @read_only = read_only
+        @services = dep.uniq
         @services.group_by { |service| service.loadbalancer_port }.each do |port, services|
           if services.length > 1
             raise PortCollision, "Port collission between #{services.collect(&:name).join(',')}"
@@ -22,7 +31,17 @@ module Dendrite
 
       def to_h
         service_list = services.inject({}) do |hash, service|
-          hash[service.name] = service.to_h
+
+          if read_only[service.name]
+            data = service.to_h
+            discovery_data = data[:discovery].merge({
+              path: "/smartstack/services/#{service.organization}/#{service.component}/#{service.service.real_name}_readonly/instances"
+            })
+            data[:discovery] = discovery_data
+            hash[service.name] = data
+          else
+            hash[service.name] = service.to_h
+          end
           hash
         end
 

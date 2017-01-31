@@ -95,7 +95,7 @@ module Dendrite
       validates_inclusion_of :port, :in => 1..65535
     end
 
-    Dependency = Struct.new(:service, :latency, :identifier) do
+    Dependency = Struct.new(:service, :latency, :identifier, :read_only) do
       include ActiveModel::Validations
       validates_presence_of :service
       validates_presence_of :latency
@@ -196,8 +196,8 @@ module Dendrite
       ports[:loadbalancer_port].port if ports[:loadbalancer_port]
     end
 
-    def add_dependency(service:, latency:, identifier:)
-      @dependencies[service.name] = Dependency.new(service, latency, identifier)
+    def add_dependency(service:, latency:, identifier:, read_only: false)
+      @dependencies[service.name] = Dependency.new(service, latency, identifier, read_only == true)
     end
 
     def to_h

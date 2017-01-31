@@ -40,6 +40,7 @@ subcomponents:
         subcomponent: cat
         latency: foo
         identifier: barbaz
+        read_only: true
       - component: cams
         subcomponent: foobar
         latency: foo
@@ -55,13 +56,19 @@ subcomponents:
     scale:
       min_instance_count: 1
       max_instance_count: 5
+    default_servers:
+      - host: 0.0.0.0
+        port: 8080
+        environment: prd
     ports:
       loadbalancer_port: 8081
       service_port: 8080
     dependencies:
       - component: cams
-        subcomponent: foobar
-        latency: foo
+        subcomponent: cat
+        latency: 10
+    metadata:
+      read_only: true
   - name: baz
     type: tomcat
     deploy:

@@ -28,7 +28,7 @@ rescue
   []
 end.collect(&:to_s)
 services += options[:service_name].split(',')
-services.uniq!
+services = services.collect{|s| s.gsub("_readonly", "")}.uniq
 
 raise Dendrite::InvalidData unless graph.valid?
 raise Dendrite::UnknownService unless services.collect {|service_name| graph[service_name]}.all?

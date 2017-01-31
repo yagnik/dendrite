@@ -11,7 +11,19 @@ module Dendrite
 
       def to_h
         service_list = services.inject({}) do |hash, service|
-          hash[service.name] = service.to_h
+          if service.read_write
+            hash[service.name] = service.to_h
+            hash["#{service.name}_readonly"] = service.to_h.merge({
+              zk_path: "/smartstack/services/#{service.organization}/#{service.component}/#{service.service.real_name}_readonly/instances"
+            })
+          elsif service.read_only
+            hash["#{service.name}_readonly"] = service.to_h.merge({
+              zk_path: "/smartstack/services/#{service.organization}/#{service.component}/#{service.service.real_name}_readonly/instances"
+            })
+          else
+            hash[service.name] = service.to_h
+          end
+
           hash
         end
 
@@ -25,6 +37,14 @@ module Dendrite
         def_delegator :service, :name, :name
         def_delegator :service, :component, :component
         def_delegator :service, :organization, :organization
+
+        def read_only
+          service.metadata && service.metadata.read_only
+        end
+
+        def read_write
+          read_only && service.metadata.write_only
+        end
 
         def to_h
           {
