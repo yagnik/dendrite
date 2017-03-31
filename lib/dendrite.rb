@@ -88,6 +88,10 @@ module Dendrite
         @@data[:dendrite][:bind_to_all] != nil
       end
 
+      def default_check_time
+        @@data[:dendrite][:check_internal] || 5
+      end
+
       def public_ip
         ip = Socket.ip_address_list.detect{|intf| intf.ipv4_private?} ||
              Socket.ip_address_list.detect{|intf| intf.ipv4? && !intf.ipv4_loopback? && !intf.ipv4_multicast? && !intf.ipv4_private?}

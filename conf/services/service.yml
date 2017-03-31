@@ -50,6 +50,9 @@ subcomponents:
       sticky_session: sessionkey
   - name: cat
     type: mysql
+    telemetry:
+      health_url: /
+      notification_email: foo@bar.com
     deploy:
       repository: git@github.com:yagnik/dendrite
       package: dendrite

@@ -54,7 +54,22 @@ module Dendrite
               dc: Dendrite::Config.dc,
               env: Dendrite::Config.env
             }
-          }.merge(zookeeper_config)
+          }.merge(zookeeper_config).merge(check_config)
+        end
+
+        def check_config
+          return {} if not (service.service_port && service.telemetry && service.telemetry.health_url)
+          {
+            check_interval: Dendrite::Config.default_check_time,
+            checks: [{
+              type: "http"
+              host: Dendrite::Config.public_ip,
+              port: service.service_port,
+              uri: service.telemetry.health_url,
+              rise: 3,
+              fall: 2
+            }]
+          }
         end
 
         def zookeeper_config
