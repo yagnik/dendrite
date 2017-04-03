@@ -62,7 +62,7 @@ module Dendrite
           {
             check_interval: Dendrite::Config.default_check_time,
             checks: [{
-              type: "http"
+              type: "http",
               host: Dendrite::Config.public_ip,
               port: service.service_port,
               uri: service.telemetry.health_url,
